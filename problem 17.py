@@ -6,74 +6,77 @@ numbers = {
     50:'fifty',60:'sixty',70:'seventy',80:'eighty',90:'ninety',
     100:'hundred',1000:'thousand'}
 
-tally = 0
+total = 0
 for number in range(1, 1001):
     string_of_number = str(number)
     if len(str(number)) == 1:
-
+        # if the number only has one digit, then it is in the dictionary. No parsing or magical stuff required.
         length_of_number = len(numbers[number])
-        print ("n= %s k= %s" % (number, length_of_number))
+        
 
     elif len(str(number)) == 2:
-        x1 = string_of_number[0]
-        x2 = string_of_number[1]
+        # if the number has 2 digits, split it up into the two digits
+        first_digit = string_of_number[0]
+        second_digit = string_of_number[1]
         if number < 20:
-            # The numbers under 20 -- in the dictionary
+            # The numbers under 20 are in the dictionary, again, no magic required.
             length_of_number = len(numbers[number])
-            print ("n= %s k= %s" % (number, length_of_number))
         else:
-            if x2 == '0':
-                # The numbers under 100 and greater than 19 -- in the
-                # dictionary ending in '0', (20, 30, 40 ....)
+            if second_digit == '0':
+                # This checks if the number is a multiple of ten, which are irregular and thus are referenced directly
+                # in the dictionary, like the single digit numbers.
                 length_of_number = len(numbers[number])
-                print ("n= %s k= %s" % (number, length_of_number))
             else:
-                # The other numbers under 100 greater than 19
-                x1a = str(x1 + '0')
-                length_of_number = len(numbers[int(x1a)]) + len(numbers[int(x2)])
-                print ("n1= %s k1= %s" % (number, length_of_number))
+                # If the two digit number is not a multiple of ten, partition the number into tens and units by taking 
+                # the first digit and adding 0 to it
+                tens = str(first_digit + '0')
+                length_of_number = len(numbers[int(tens)]) + len(numbers[int(second_digit)])
+                
 
 
     elif len(str(number)) == 3:
-        # add 3 for 'and' i.e. -- two-hundred and ten
-        x1 = string_of_number[0:1]
-        x2 = string_of_number[1:2]
-        x3 = string_of_number[2:3]
-        x1a = str(x2 + '0')
-        x1aa = str(x2 + x3)
-        if x1 == '1' and x2 == '0' and x3 == '0':
-            # 100 -- in the dictionary
+        # if the number has 3 digits, split it up into 3 digits
+        first_digit = string_of_number[0]
+        second_digit = string_of_number[1]
+        third_digit = string_of_number[2]
+        # partition the number into tens, and then the last two digits separately for separate length calculation
+        tens = str(second_digit + '0')
+        last_two_digits = str(second_digit + third_digit)
+
+        # we will check the length of the number in different ways depending on their format
+        # check if the number is 100, and therefore in the dictionary, no magic required
+        if first_digit == '1' and second_digit == '0' and third_digit == '0':
+            
             length_of_number = len(numbers[1]) + len(numbers[100])
-            print ("n= %s k= %s" % (number, length_of_number))
-        elif x2 == '0' and x3 == '0':
-            # Consider 200, 300, 400, 500, 600, 700, 800, and 900
-            length_of_number = len(numbers[int(x1)]) + len(numbers[100])
-            print ("n= %s k= %s" % (number, length_of_number))
-        elif x2 == '0' and x3 != '0':
-            # Consider 101, 102 ... 109, 201, 202, ... 209 etc.
-            length_of_number = 3 + len(numbers[int(x1)]) + len(numbers[100]) \
-                               + len(numbers[int(x3)])
-            print ("n= %s k= %s" % (number, length_of_number))
-        elif x2 != '0' and x3 == '0':
-            # Consider 110, 120, ... 190, 210, 220, ... 290 etc.
-            length_of_number = 3 + len(numbers[int(x1)]) + len(numbers[100]) \
-                               + len(numbers[int(x1a)])
-            print ("n= %s k= %s" % (number, length_of_number))
-        elif x2 == '1' and x3 != '0':
-            # Consider the teens 111, 112, ... 119, 211, 212, ... 219 etc.
-            length_of_number = 3 + len(numbers[int(x1)]) + len(numbers[100]) \
-                               + len(numbers[int(x1aa)])
-            print ("n= %s k= %s" % (number, length_of_number))
+
+        # if not 100, then check if the number is another multiple of 100, and therefore easier to calculate
+        elif second_digit == '0' and third_digit == '0':
+            
+            length_of_number = len(numbers[int(first_digit)]) + len(numbers[100])
+
+        # check if the number fits the form of n - 0 - x, for example 2 - 0 - 3
+        elif second_digit == '0' and third_digit != '0':
+
+            length_of_number = 3 + len(numbers[int(first_digit)]) + len(numbers[100]) + len(numbers[int(third_digit)])
+
+        # check if the number fits the form of n - x - 0, for example 2 - 3 - 0
+        elif second_digit != '0' and third_digit == '0':
+
+            length_of_number = 3 + len(numbers[int(first_digit)]) + len(numbers[100]) + len(numbers[int(tens)])
+
+        # check if the number fits the form of n - 1 - 0
+        elif second_digit == '1' and third_digit != '0':
+
+            length_of_number = 3 + len(numbers[int(first_digit)]) + len(numbers[100]) + len(numbers[int(last_two_digits)])
+
+        # all the other numbers
         else:
-            # Consider all the other numbers
-            length_of_number = 3 + len(numbers[int(x1)]) + len(numbers[100]) \
-                               + len(numbers[int(x1a)]) + len(numbers[int(x3)])
-            print ("n= %s k= %s" % (number, length_of_number))
+            length_of_number = 3 + len(numbers[int(first_digit)]) + len(numbers[100]) + len(numbers[int(tens)]) + len(numbers[int(third_digit)])
 
     else:
-        # 1000 -- two parts (one and thousand) -- in the dictionary
+        # we work out the length of one thousand
         length_of_number = len(numbers[1]) + len(numbers[1000])
-        print ("n= %s k= %s" % (number, length_of_number))
 
-    tally = tally + length_of_number
-print ("Final Tally = %s" % tally)
+    total = total + length_of_number
+
+print ("Final Tally = %s" % total)
